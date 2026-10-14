@@ -74,6 +74,12 @@ fun App() {
                     icon = { Text("🏋️") },
                     label = { Text("Gym") },
                 )
+                NavigationBarItem(
+                    selected = tab == 2,
+                    onClick = { tab = 2 },
+                    icon = { Text("⚙️") },
+                    label = { Text("Settings") },
+                )
             }
         }
     ) { pad ->
@@ -84,7 +90,11 @@ fun App() {
                 .consumeWindowInsets(pad)
                 .imePadding()
         ) {
-            if (tab == 0) SleepScreen() else GymScreen()
+            when (tab) {
+                0 -> SleepScreen()
+                1 -> GymScreen()
+                else -> SettingsScreen()
+            }
         }
     }
 }
