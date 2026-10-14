@@ -1,6 +1,11 @@
 package cz.veprek.petovocvicitko
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.ui.draw.clip
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -45,8 +50,19 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import java.time.LocalDate
 
-private val GOOD = Color(0xFF2E9E5B)
-private val BAD = Color(0xFFE08A1E)
+/** Barevná škála spánku: (od kolika hodin, barva, popisek legendy). */
+private val SLEEP_SCALE = listOf(
+    Triple(0, Color(0xFFE53935), "≤ 5 h"),      // červená (včetně přesně 5 h)
+    Triple(5, Color(0xFFF57C00), "5–7 h"),      // oranžová
+    Triple(7, Color(0xFF9CCC65), "7–8 h"),      // světle zelená
+    Triple(8, Color(0xFF388E3C), "8–9 h"),      // tmavší zelená
+    Triple(9, Color(0xFF4FC3F7), "9–10 h"),     // světle modrá
+    Triple(10, Color(0xFF1E88E5), "10+ h"),     // modrá
+)
+
+fun sleepColor(minutes: Int): Color =
+    if (minutes <= 5 * 60) SLEEP_SCALE[0].second // přesně 5 h je ještě červená, 5 h 1 min už oranžová
+    else SLEEP_SCALE.last { minutes >= it.first * 60 }.second
 
 @Composable
 fun SleepScreen() {
@@ -104,8 +120,9 @@ fun SleepScreen() {
                     }
                     SleepChart(entries, range)
                     Spacer(Modifier.height(4.dp))
+                    SleepLegend()
                     Text(
-                        "Čárkovaná čára = 8 h · zelená ≥ 8 h · oranžová < 8 h",
+                        "Čárkovaná čára = 8 h",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -182,7 +199,7 @@ fun SleepScreen() {
                 Text(formatDate(e.date), Modifier.weight(1f))
                 Text(
                     formatDuration(e.minutes),
-                    color = if (e.minutes >= SLEEP_GOAL_MIN) GOOD else BAD,
+                    color = sleepColor(e.minutes),
                     fontWeight = FontWeight.SemiBold,
                 )
                 Spacer(Modifier.width(4.dp))
@@ -206,6 +223,32 @@ private fun StatCard(title: String, value: String, modifier: Modifier = Modifier
         Column(Modifier.padding(12.dp)) {
             Text(title, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
             Text(value, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+        }
+    }
+}
+
+@Composable
+private fun SleepLegend() {
+    Column(Modifier.padding(vertical = 4.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        SLEEP_SCALE.chunked(3).forEach { row ->
+            Row(Modifier.fillMaxWidth()) {
+                row.forEach { (_, color, label) ->
+                    Row(Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically) {
+                        Box(
+                            Modifier
+                                .size(10.dp)
+                                .clip(CircleShape)
+                                .background(color)
+                        )
+                        Spacer(Modifier.width(6.dp))
+                        Text(
+                            label,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                }
+            }
         }
     }
 }
@@ -238,7 +281,7 @@ private fun SleepChart(entries: List<SleepEntry>, days: Int) {
             } else {
                 val hgt = size.height * v / maxMin
                 drawRoundRect(
-                    color = if (v >= SLEEP_GOAL_MIN) GOOD else BAD,
+                    color = sleepColor(v),
                     topLeft = Offset(x, size.height - hgt),
                     size = Size(barW, hgt),
                     cornerRadius = radius,
