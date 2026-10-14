@@ -1,4 +1,4 @@
-# Zdraví
+# PetovoCvicitko
 
 Android appka (Kotlin + Jetpack Compose) pro zápis spánku a tréninků. Data jsou jen lokálně v telefonu (`data.json` v interním úložišti appky).
 

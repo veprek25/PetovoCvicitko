@@ -81,7 +81,7 @@ fun SettingsScreen() {
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 Button(
-                    onClick = { exportLauncher.launch("zdravi-zaloha-${LocalDate.now()}.json") },
+                    onClick = { exportLauncher.launch("petovocvicitko-zaloha-${LocalDate.now()}.json") },
                     modifier = Modifier.fillMaxWidth(),
                 ) { Text("Exportovat data") }
                 OutlinedButton(
@@ -103,7 +103,7 @@ fun SettingsScreen() {
             confirmButton = {
                 TextButton(onClick = {
                     status = if (Store.importJson(text)) "Data obnovena ze zálohy."
-                    else "Soubor není platná záloha Zdraví."
+                    else "Soubor není platná záloha PetovoCvicitko."
                     pendingImport = null
                 }) { Text("Importovat") }
             },
