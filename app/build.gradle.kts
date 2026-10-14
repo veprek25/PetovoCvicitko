@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "cz.veprek.zdravi"
+    namespace = "cz.veprek.petovocvicitko"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "cz.veprek.zdravi"
+        applicationId = "cz.veprek.petovocvicitko"
         minSdk = 26
         targetSdk = 35
         // CI nastaví VERSION_CODE = číslo běhu workflow -> každý release má vyšší verzi

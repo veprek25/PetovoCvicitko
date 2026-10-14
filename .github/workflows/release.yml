@@ -1,10 +1,9 @@
 name: Build & Release
 
-# push do main  -> podepsaný release (Obtainium si ho stáhne)
-# pull request  -> jen ověří, že se build sestaví (nic nevydává)
+# push do main          -> podepsaný release (Obtainium si ho stáhne)
+# push do jiné větve / PR -> jen ověří, že se build sestaví (nic nevydává)
 on:
   push:
-    branches: [main]
   pull_request:
   workflow_dispatch:
 
@@ -20,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       VERSION_CODE: ${{ github.run_number }}
-      IS_RELEASE: ${{ github.event_name != 'pull_request' }}
+      IS_RELEASE: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' }}
     steps:
       - uses: actions/checkout@v4
 
@@ -52,22 +51,22 @@ jobs:
           chmod +x gradlew
           if [ "$IS_RELEASE" = "true" ]; then
             ./gradlew assembleRelease --no-daemon
-            cp app/build/outputs/apk/release/app-release.apk "zdravi-1.0.$VERSION_CODE.apk"
+            cp app/build/outputs/apk/release/app-release.apk "petovocvicitko-1.0.$VERSION_CODE.apk"
           else
             ./gradlew assembleDebug --no-daemon
-            cp app/build/outputs/apk/debug/app-debug.apk "zdravi-pr-$VERSION_CODE.apk"
+            cp app/build/outputs/apk/debug/app-debug.apk "petovocvicitko-pr-$VERSION_CODE.apk"
           fi
 
       - uses: actions/upload-artifact@v4
         with:
-          name: zdravi-apk
-          path: zdravi-*.apk
+          name: petovocvicitko-apk
+          path: petovocvicitko-*.apk
 
       - name: Publish release
         if: env.IS_RELEASE == 'true'
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v1.0.${{ github.run_number }}
-          name: Zdraví 1.0.${{ github.run_number }}
+          name: PetovoCvicitko 1.0.${{ github.run_number }}
           body: ${{ github.event.head_commit.message }}
-          files: zdravi-1.0.${{ github.run_number }}.apk
+          files: petovocvicitko-1.0.${{ github.run_number }}.apk

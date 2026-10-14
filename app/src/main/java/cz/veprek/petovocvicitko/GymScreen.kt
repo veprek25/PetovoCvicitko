@@ -1,7 +1,8 @@
-package cz.veprek.zdravi
+package cz.veprek.petovocvicitko
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -21,10 +22,13 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -35,11 +39,26 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import java.time.LocalDate
 
 @Composable
 fun GymScreen() {
+    var sub by rememberSaveable { mutableIntStateOf(0) }
+    Column(Modifier.fillMaxSize()) {
+        TabRow(selectedTabIndex = sub) {
+            Tab(selected = sub == 0, onClick = { sub = 0 }, text = { Text("Záznamy") })
+            Tab(selected = sub == 1, onClick = { sub = 1 }, text = { Text("Split") })
+        }
+        Box(Modifier.weight(1f)) {
+            if (sub == 0) GymRecords() else SplitScreen()
+        }
+    }
+}
+
+@Composable
+private fun GymRecords() {
     var date by remember { mutableStateOf(LocalDate.now()) }
     var name by rememberSaveable { mutableStateOf("") }
     var sets by rememberSaveable { mutableStateOf("") }
@@ -62,10 +81,20 @@ fun GymScreen() {
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        item {
-            Text("Gym", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
-        }
         item { DateSelector(date) { date = it } }
+
+        // co je podle splitu na zvolený den
+        Store.split[date.dayOfWeek.value]?.let { plan ->
+            item {
+                Text(
+                    "Plán: $plan",
+                    style = MaterialTheme.typography.titleSmall,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center,
+                )
+            }
+        }
 
         // Formulář: 1 nahoře (cvik), 2 dole (série×opakování | kg)
         item {

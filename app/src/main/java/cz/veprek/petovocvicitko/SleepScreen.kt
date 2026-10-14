@@ -1,4 +1,4 @@
-package cz.veprek.zdravi
+package cz.veprek.petovocvicitko
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
