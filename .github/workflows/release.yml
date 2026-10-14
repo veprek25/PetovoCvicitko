@@ -1,10 +1,9 @@
 name: Build & Release
 
-# push do main  -> podepsaný release (Obtainium si ho stáhne)
-# pull request  -> jen ověří, že se build sestaví (nic nevydává)
+# push do main          -> podepsaný release (Obtainium si ho stáhne)
+# push do jiné větve / PR -> jen ověří, že se build sestaví (nic nevydává)
 on:
   push:
-    branches: [main]
   pull_request:
   workflow_dispatch:
 
@@ -20,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       VERSION_CODE: ${{ github.run_number }}
-      IS_RELEASE: ${{ github.event_name != 'pull_request' }}
+      IS_RELEASE: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' }}
     steps:
       - uses: actions/checkout@v4
 
