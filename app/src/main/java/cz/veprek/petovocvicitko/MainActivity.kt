@@ -1,4 +1,4 @@
-package cz.veprek.zdravi
+package cz.veprek.petovocvicitko
 
 import android.os.Build
 import android.os.Bundle

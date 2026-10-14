@@ -1,4 +1,4 @@
-package cz.veprek.zdravi
+package cz.veprek.petovocvicitko
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts

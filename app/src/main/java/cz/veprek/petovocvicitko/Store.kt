@@ -1,4 +1,4 @@
-package cz.veprek.zdravi
+package cz.veprek.petovocvicitko
 
 import android.content.Context
 import androidx.compose.runtime.mutableStateListOf
