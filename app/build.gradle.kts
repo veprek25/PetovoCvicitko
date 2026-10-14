@@ -12,24 +12,30 @@ android {
         applicationId = "cz.veprek.zdravi"
         minSdk = 26
         targetSdk = 35
-        versionCode = 1
-        versionName = "1.0"
+        // CI nastaví VERSION_CODE = číslo běhu workflow -> každý release má vyšší verzi
+        val vc = (System.getenv("VERSION_CODE") ?: "1").toInt()
+        versionCode = vc
+        versionName = "1.0.$vc"
     }
 
-    // Pevný podpisový klíč v repu -> každý nový build jde nainstalovat přes starý bez ztráty dat
+    // Release klíč přichází jen z GitHub Secrets (v CI). Lokálně se release podepíše debug klíčem.
+    val releaseKeystore = System.getenv("KEYSTORE_FILE")
     signingConfigs {
-        getByName("debug") {
-            storeFile = file("debug.keystore")
-            storePassword = "android"
-            keyAlias = "androiddebugkey"
-            keyPassword = "android"
+        create("release") {
+            if (releaseKeystore != null) {
+                storeFile = file(releaseKeystore)
+                storePassword = System.getenv("KEYSTORE_PASSWORD")
+                keyAlias = System.getenv("KEY_ALIAS")
+                keyPassword = System.getenv("KEY_PASSWORD")
+            }
         }
     }
 
     buildTypes {
         release {
             isMinifyEnabled = false
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = if (releaseKeystore != null) signingConfigs.getByName("release")
+            else signingConfigs.getByName("debug")
         }
     }
 

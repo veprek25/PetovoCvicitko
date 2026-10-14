@@ -16,19 +16,10 @@ Android appka (Kotlin + Jetpack Compose) pro zápis spánku a tréninků. Data j
 - u známého cviku ukáže, co jsi dal minule
 - seznam předchozích tréninků
 
-## Build
+## Build & release
 
-### GitHub Actions (bez Android Studia)
-1. Vytvoř na GitHubu prázdný repozitář a pushni tam tuhle složku.
-2. Actions → workflow **Build APK** se spustí sám (nebo ručně přes *Run workflow*).
-3. Po doběhnutí stáhni artifact `zdravi-apk` (zip s APK) a nainstaluj na telefon.
+- **Push do `main`** → GitHub Actions sestaví podepsané APK a vydá ho jako Release `v1.0.<číslo běhu>`. Obtainium v telefonu si ho stáhne.
+- **Pull request** → jen ověří, že se build sestaví.
+- Podpisový klíč je jen v GitHub Secrets: `KEYSTORE_BASE64`, `KEYSTORE_PASSWORD`, `KEY_ALIAS`, `KEY_PASSWORD`.
 
-### Lokálně
-```
-./gradlew assembleDebug
-```
-Potřebuje JDK 17 a Android SDK (`ANDROID_HOME` nebo `local.properties`). APK: `app/build/outputs/apk/debug/app-debug.apk`.
-
-## Pozn.
-- APK je podepsané pevným klíčem `app/debug.keystore`, takže nové verze jdou instalovat přes starou bez ztráty dat. Klíč neměň, jinak musíš appku odinstalovat (= smazat data).
-- Zálohu dat řeší Android Auto Backup (pokud ho máš zapnutý).
+Lokálně: `./gradlew assembleDebug` (JDK 17 + Android SDK).
