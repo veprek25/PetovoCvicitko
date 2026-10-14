@@ -52,7 +52,7 @@ import java.time.LocalDate
 
 /** Barevná škála spánku: (od kolika hodin, barva, popisek legendy). */
 private val SLEEP_SCALE = listOf(
-    Triple(0, Color(0xFFE53935), "< 5 h"),      // červená
+    Triple(0, Color(0xFFE53935), "≤ 5 h"),      // červená (včetně přesně 5 h)
     Triple(5, Color(0xFFF57C00), "5–7 h"),      // oranžová
     Triple(7, Color(0xFF9CCC65), "7–8 h"),      // světle zelená
     Triple(8, Color(0xFF388E3C), "8–9 h"),      // tmavší zelená
@@ -61,7 +61,8 @@ private val SLEEP_SCALE = listOf(
 )
 
 fun sleepColor(minutes: Int): Color =
-    SLEEP_SCALE.last { minutes >= it.first * 60 }.second
+    if (minutes <= 5 * 60) SLEEP_SCALE[0].second // přesně 5 h je ještě červená, 5 h 1 min už oranžová
+    else SLEEP_SCALE.last { minutes >= it.first * 60 }.second
 
 @Composable
 fun SleepScreen() {
