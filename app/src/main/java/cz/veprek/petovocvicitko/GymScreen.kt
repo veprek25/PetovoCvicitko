@@ -19,6 +19,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -111,6 +112,18 @@ private fun SubNav(items: List<String>, selected: Int, onSelect: (Int) -> Unit) 
 @Composable
 private fun GymRecords() {
     var date by remember { mutableStateOf(LocalDate.now()) }
+    var showCalendar by remember { mutableStateOf(false) }
+
+    if (showCalendar) {
+        GymCalendarDialog(
+            initial = date,
+            onDismiss = { showCalendar = false },
+            onOpenDay = {
+                date = it
+                showCalendar = false
+            },
+        )
+    }
     var name by rememberSaveable { mutableStateOf("") }
     var sets by rememberSaveable { mutableStateOf("") }
     var kg by rememberSaveable { mutableStateOf("") }
@@ -132,7 +145,14 @@ private fun GymRecords() {
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        item { DateSelector(date) { date = it } }
+        item {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Box(Modifier.weight(1f)) { DateSelector(date) { date = it } }
+                IconButton(onClick = { showCalendar = true }) {
+                    Icon(Icons.Default.DateRange, contentDescription = "Kalendář tréninků")
+                }
+            }
+        }
 
         // co je podle splitu na zvolený den
         Store.split[date.dayOfWeek.value]?.let { plan ->
@@ -267,7 +287,7 @@ private fun GymRecords() {
     }
 }
 
-private fun describe(e: GymEntry): String =
+fun describe(e: GymEntry): String =
     if (e.kg.isBlank()) e.setsReps else "${e.setsReps} · ${e.kg} kg"
 
 private fun exWord(n: Int): String = when {
